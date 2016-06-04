@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .x {
+            height: 200px;
+            border: 1px solid #000;
+            background: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="x"></div>
+    <div class="x"></div>
+    <div class="x"></div>
+    <div class="x"></div>
+    <div class="x" id="d"></div>
+    <div class="x"></div>
+    <script>
+//        var d = document.getElementById('d');
+//        console.log(d.getBoundingClientRect());
+        /*
+        在ie8-中execScript是一个对象
+        模块复用并不等于模块依赖
+        1、模块定义
+            按照功能去划分模块，所以就不会出现公共模块和可复用模块（出现公共，依赖就代表耦合）
+        2、模块实现
+
+        * */
+        var timer = null;
+        window.onscroll = function () {
+            //timer && clearTimeout(timer);
+            timer = setTimeout(function () {
+                console.log('1');
+            }, 30);
+        }
+        //clearTimeout(timer);
+    </script>
+</body>
+</html>
