@@ -9,16 +9,35 @@
             border: 1px solid #000;
             background: green;
         }
+        
+        .x1 {
+            height: 657px;
+        }
+        
+        .x2 {
+            height: 515px;
+        }
+        
+        .x3 {
+            height: 550px;
+        }
     </style>
 </head>
 <body>
-    <div class="x"></div>
-    <div class="x"></div>
-    <div class="x"></div>
-    <div class="x"></div>
-    <div class="x" id="d"></div>
-    <div class="x"></div>
+    <div class="x x1">
+        <img data-src="imgs/family_account.png" />
+    </div>
+    <div class="x x2">
+        <img data-src="imgs/framework.png" />
+    </div>
+    <div class="x x3">
+        <img data-src="imgs/manager.jpg" />
+    </div>
+    <script src="lazyload.js"></script>
     <script>
+        new LazyLoad('.x');   
+    </script>
+    <!--<script>
 //        var d = document.getElementById('d');
 //        console.log(d.getBoundingClientRect());
         /*
@@ -27,16 +46,21 @@
         1、模块定义
             按照功能去划分模块，所以就不会出现公共模块和可复用模块（出现公共，依赖就代表耦合）
         2、模块实现
-
+        异步编程模型
+        首先这两个线程是独立创建处理的，当工作线程创建完毕后，将消息插入到主线程，主线程通过事件轮询找到该模型并且执行
+        
         * */
-        var timer = null;
+        
         window.onscroll = function () {
-            //timer && clearTimeout(timer);
-            timer = setTimeout(function () {
-                console.log('1');
-            }, 30);
+            console.log(1);
         }
+        // var timer = null;
+        // for (var i = 0; i < 100; i++) {
+        //     setTimeout(function () {
+        //         console.log(1);
+        //     }, 3000);
+        // }
         //clearTimeout(timer);
-    </script>
+    </script>-->
 </body>
 </html>

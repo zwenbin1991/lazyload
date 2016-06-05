@@ -10,8 +10,8 @@
     root.LazyLoad = factory(root);
 }(function (root) {
     var doc = root.document;
-    var viewportHeight = doc.documentElement.clientHeight;
     var isIE8Under = typeof execScript === 'object' ? true : false;
+    var viewportHeight = document.documentElement.clientHeight;
     var __LAZYLOAD_TIMELINE__ = 30;
 
     function LazyLoad (selector, options) {
@@ -19,46 +19,65 @@
 
         this.pageNum = 1;
         this.tag = options.tag || 'data-src';
-        this.distance = options.distance || 0;
         this.elements = this.constructor.query(selector);
-
+           
         this.init();
     }
 
     LazyLoad.prototype.init = function () {
-        var self = this, timer;
+        var self = this;
 
         // 初始化检测并加载
         this.loading();
 
         // 绑定window scroll事件
         this.constructor.bindScrollEvent(function () {
-            // 延迟30毫秒检测，每次滚动删除上一个定时器线程，避免浏览器崩溃
-            timer && clearTimeout(timer);
-            timer = setTimeout(function () {
-                self.loading();
-            }, __LAZYLOAD_TIMELINE__);
+            self.loading();
         });
     };
-
+    
+    /*
+     * 检测加载元素是否和当前视觉窗口相交
+    */
     LazyLoad.prototype.detect = function (element) {
-        var rect = element.getBoundingClientRect();
-        var top = rect.top;
-        var bottom = rect.bottom;
-    };
+        var viewportRect = this.constructor.getViewportRect();
+        var viewportRectTop = viewportRect.top;
+        var viewportRectHeight = parseInt(viewportRect.height / 2);
+        var viewportRectCenter = viewportRect.top + viewportRectHeight;
+        var elementRect = element.getBoundingClientRect();
+        var elementRectTop = elementRect.top;
+        var elementRectHeight = parseInt(elementRect.height / 2);
+        var elementRectCenter = elementRect.top + elementRectHeight;
 
-    LazyLoad.prototype.detectNextPage = function () {
-        var scrollTop = isIE8Under ? document.documentElement.scrollTop : document.body.scrollTop;
-
-        if (parseInt(scrollTop) >= viewportHeight) this.pageNum++;
+        // 显示窗口中心位置和元素中心位置如果是相交或相切这个条件，那么开始加载该元素
+        // 显示窗口和元素中心之间的距离大于他们的半宽之和 
+        return Math.abs(viewportRectCenter - elementRectCenter) <= viewportRectHeight + elementRectHeight;
     };
 
     LazyLoad.prototype.loading = function () {
-
+        for (var i = 0, element, length = this.elements.length; i < length; i++) {
+            element = this.elements[i];
+            
+            if (this.detect(element)) {
+                this.loadImage(element);
+                this.elements.splice(i, 1);
+                i--;
+                length--;
+            }     
+        }                    
     };
 
-    LazyLoad.prototype.loadImage = function () {
-
+    LazyLoad.prototype.loadImage = function (element) {
+        var imageElements = element.getElementsByTagName('img');
+        var i = 0;
+        var length = imageElements.length, src, imageElement;
+        
+        for (; i < length; i++) {
+            imageElement = imageElements[i];
+            src = imageElement.getAttribute(this.tag); 
+            src && imageElement.setAttribute('src', src);       
+        }
+                        
     };
 
     /* LazyLoad静态方法 */
@@ -99,8 +118,18 @@
             }
         }
 
-        return ret;
-    }
-
+        return ret instanceof Array ? ret : [].slice.call(ret);
+    };
+    
+    /*
+     * 获取
+    */
+    LazyLoad.getViewportRect = function () {
+        return {
+            top: isIE8Under ? document.documentElement.scrollTop : document.body.scrollTop,
+            height: viewportHeight
+        };   
+    };  
+    
+    return LazyLoad;
 });
-
